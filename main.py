@@ -2,6 +2,7 @@ import pygame
 from sys import exit
 from random import randint, choice
 
+# player class
 class Player(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
@@ -27,6 +28,7 @@ class Player(pygame.sprite.Sprite):
     def apply_grav(self):
         self.grav += 1
         self.rect.y += self.grav
+        # if player hits the ground they will not fall through
         if self.rect.bottom >= 350:
             self.rect.bottom = 350
 
@@ -35,7 +37,7 @@ class Player(pygame.sprite.Sprite):
         self.player_input()
         self.apply_grav()
 
-
+# Enemy class
 class Enemy(pygame.sprite.Sprite):
     def __init__(self, type):
         super().__init__()
@@ -51,10 +53,10 @@ class Enemy(pygame.sprite.Sprite):
             teemo_mushroom_surface = pygame.transform.scale(teemo_mushroom_surface, (50, 50))
             self.image = teemo_mushroom_surface
             y_pos = 350
-
+        # set the obstacle spawning position randomly between the range 
         self.rect = self.image.get_rect(midbottom = (randint(1100, 1200), y_pos))
         
-
+    # method to update rectangle speed as the score increases and destroy the enemy off the screen to save memory 
     def update(self):
         self.rect.x -= 6
         self.destroy()
@@ -77,12 +79,12 @@ class Enemy(pygame.sprite.Sprite):
         if score >= 50:
             self.rect.x -= 2
 
-
+    # method to destroy enemy off the screen to save memory
     def destroy(self):
         if self.rect.x <= -100:
             self.kill
             
-    
+    # function to check score
 def display_score():
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
     score_surface = font.render(f'Score: {current_time}', False, '#483C32')
@@ -90,7 +92,7 @@ def display_score():
     screen.blit(score_surface, score_rect)
     return current_time
 
-
+    # function to display enemies
 def obstacle_movement(obstacle_list):
     if obstacle_list:
         for obstacle_rect in obstacle_list:
@@ -108,7 +110,7 @@ def obstacle_movement(obstacle_list):
     else:
         return []
 
-
+    # function to detect collision with player
 def collisions(player, obstacles):
     if obstacles:
         for obstacle_rect in obstacles:
@@ -116,7 +118,7 @@ def collisions(player, obstacles):
                 return False
     return True
 
-
+    # function to detect collision with sprite
 def collision_sprite():
     if pygame.sprite.spritecollide(player.sprite, obstacle_group, False):
         obstacle_group.empty()
@@ -182,7 +184,7 @@ game_name_rect = game_name.get_rect(center = (450, 50))
 game_into = font.render('Press space to run!', False, '#483C32')
 game_into_rec = game_into.get_rect(center =(450, 400))
 
-# Timer
+# Timer to start at the beginning of the game and set obstacles timer to change as the score increases
 def set_obstacle_timer(score):
     if score == 0:
         pygame.time.set_timer(obstacle_timer, 900)
@@ -199,6 +201,10 @@ def set_obstacle_timer(score):
     if score == 50:
         pygame.time.set_timer(obstacle_timer, 500)
 
+    if score == 100:
+        pygame.time.set_timer(obstacle_timer, 300)
+
+# starting timer for game
 obstacle_timer = pygame.USEREVENT + 1
 pygame.time.set_timer(obstacle_timer, 900)
 
@@ -220,7 +226,8 @@ while True:
             if event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 game_state = True
                 start_time = int(pygame.time.get_ticks() / 1000)
-
+        
+        # add a list of enemies
         if event.type == obstacle_timer and game_state:
             obstacle_group.add(Enemy(choice(['teemo_shroom', 'teemo_shroom', 'corki', 'teemo_shroom', 'corki', 'corki', 'teemo_shroom'])))
 
@@ -241,7 +248,7 @@ while True:
         # collision
         game_state = collision_sprite()
        
-        
+        # end game screen
     else:
         screen.fill('#9370DB')
         screen.blit(player_intro, player_intro_rec)
@@ -253,6 +260,7 @@ while True:
         score_message_rect = score_message.get_rect(center = (450, 400))
         screen.blit(game_name, game_name_rect)
         
+        # score message to show when the game ends
         if score == 0:
             screen.blit(game_into, game_into_rec)
         else:
