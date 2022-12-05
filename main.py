@@ -81,8 +81,7 @@ class Enemy(pygame.sprite.Sprite):
     def destroy(self):
         if self.rect.x <= -100:
             self.kill
-
-    
+            
     
 def display_score():
     current_time = int(pygame.time.get_ticks() / 1000) - start_time
@@ -103,7 +102,6 @@ def obstacle_movement(obstacle_list):
             else:
                 screen.blit(teemo_mushroom_surface,obstacle_rect)
                 
-
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.x > -100]
 
         return obstacle_list
@@ -233,6 +231,7 @@ while True:
         score = display_score()
         set_obstacle_timer(score)
 
+
         player.draw(screen)
         player.update()
 
@@ -261,4 +260,4 @@ while True:
             
 
     pygame.display.update()
-    clock.tick(60)
+    clock.tick(80)
